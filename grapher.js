@@ -6,7 +6,7 @@ const height = g.height;
 const canvasData = c.getImageData(0,0,width,height);
 
 const offset = {x:0,y:0};
-const zoom = 1; //pixels per unit
+const zoom = 50; //pixels per unit
 const precision = 1; //pixel gap between evaluations
 
 g.addEventListener("mousedown",function(event){
@@ -32,7 +32,7 @@ Clear = (()=>{
 });
 
 DrawAxes = (()=>{
-    c.lineWidth = 3;
+    c.lineWidth = 2;
     c.strokeStyle = "#000";
 
     if(Math.abs(offset.x/zoom) <= width/2)
@@ -60,7 +60,7 @@ ChangeOffset = ((event)=>{
     Draw();
 });
 
-Eval = x=>x;
+Eval = x=>5*Math.sin(x);
 
 PlotData = (()=>{
     
@@ -84,10 +84,9 @@ Plot = (()=>{
     
         let _y = Eval(_x);
     
-        let y = -_y * zoom + offset.y;
-        y *= -1;
+        let y = _y * zoom + offset.y;
     
-        c.lineTo(x,y);
+        c.lineTo(x,y+height/2);
     }
     
     c.stroke();
