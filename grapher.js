@@ -5,23 +5,93 @@ const height = g.height;
 
 const canvasData = c.getImageData(0,0,width,height);
 
-const center = {x:0,y:0};
-const ppu = 100;
+const offset = {x:0,y:0};
+const zoom = 1; //pixels per unit
+const precision = 1; //pixel gap between evaluations
+
+g.addEventListener("mousedown",function(event){
+    g.addEventListener("mousemove",ChangeOffset);
+});
+
+g.addEventListener("mouseup",function(event){
+    g.removeEventListener("mousemove",ChangeOffset);
+})
+
+g.addEventListener("mouseleave",function(event){
+    g.removeEventListener("mousemove",ChangeOffset);
+})
+
+Clear = (()=>{
+    c.lineWidth = 2*width;
+    c.strokeStyle = '#eee';
+
+    c.beginPath();
+    c.moveTo(0,0);
+    c.lineTo(height,width);
+    c.stroke();
+});
+
+DrawAxes = (()=>{
+    c.lineWidth = 3;
+    c.strokeStyle = "#000";
+
+    if(Math.abs(offset.x/zoom) <= width/2)
+    {
+        const _x = offset.x/zoom + width/2;
+        c.beginPath();
+        c.moveTo(_x,0);
+        c.lineTo(_x,height);
+        c.stroke();
+    }
+
+    if(Math.abs(offset.y/zoom) <= height/2)
+    {
+        const _y = offset.y/zoom + height/2;
+        c.beginPath();
+        c.moveTo(0,_y);
+        c.lineTo(width,_y);
+        c.stroke();
+    }
+});
+
+ChangeOffset = ((event)=>{
+    offset.x += event.movementX;
+    offset.y += event.movementY;
+    Draw();
+});
+
+Eval = x=>x;
+
+PlotData = (()=>{
+    
+});
+
+Draw = (()=>{
+    Clear();
+    DrawAxes();
+    Plot();
+})
+
+Plot = (()=>{
+    c.lineWidth = 1;
+    c.beginPath();
+    
+    c.moveTo(0,0);
+    
+    for(let x = 0 ; x <= width ; x += precision)
+    {
+        let _x = (x-offset.x)/zoom;
+    
+        let _y = Eval(_x);
+    
+        let y = -_y * zoom + offset.y;
+        y *= -1;
+    
+        c.lineTo(x,y);
+    }
+    
+    c.stroke();
+})
 
 
-c.lineWidth = 2*width;
-c.strokeStyle = '#fff';
-
-c.moveTo(0,0);
-c.lineTo(height,width);
-c.stroke();
-
-c.strokeStyle = '#f0f';
-c.lineWidth = 3;
-
-c.beginPath();
-c.moveTo(0,0);
-c.lineTo(200,100);
-c.lineTo(200,50);
-c.stroke();
-
+Draw();
