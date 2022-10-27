@@ -3,6 +3,34 @@
 }
 */
 
+body {
+  margin: 0;
+}
+
 canvas {
   cursor: pointer;
+}
+
+.zBtn {
+  position: fixed;
+  z-index: 1;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  user-select: none;
+  cursor: pointer;
+}
+
+.zBtn img {
+  height: 28px;
+}
+
+#magnify {
+  top: 48px;
+  border-radius: 10px 10px 0 0;
+}
+
+#demagnify {
+  top: 94px;
+  border-radius: 0 0 10px 10px;
 }
