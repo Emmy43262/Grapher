@@ -1,12 +1,11 @@
 const g = document.getElementById("grapher");
 const c = g.getContext("2d");
-g.width = document.documentElement.clientWidth;
-g.height = document.documentElement.clientHeight;
+g.width = document.getElementById("wrapper").clientWidth;
+g.height = document.getElementById("wrapper").clientHeight;
 
 const width = g.width;
 const height = g.height;
 
-const canvasData = c.getImageData(0,0,width,height);
 
 const offset = {x:0,y:0};
 let zoom = 60; //pixels per unit
@@ -39,15 +38,17 @@ const functions =[
 
 ];
 
-document.getElementById("magnify").addEventListener("click",()=>{
-    zoom *= 1.2;
+ChangeZoom = (multiplier) =>{
+    zoom *= multiplier;
     ComputeGridSize();
     Draw();
+}
+
+document.getElementById("magnify").addEventListener("click",()=>{
+    ChangeZoom(1.2);
 });
 document.getElementById("demagnify").addEventListener("click",()=>{
-    zoom /= 1.2;
-    ComputeGridSize();
-    Draw();
+    ChangeZoom(1/1.2);
 });
 
 g.addEventListener("mousedown",function(event){
@@ -93,6 +94,20 @@ g.addEventListener("mousemove",function(event){
         }
     });
 
+});
+
+g.addEventListener('wheel', (event) => {
+
+    const{wheelDeltaY, offsetX, offsetY} = event;
+
+    //let dX = (offsetX - width/2)/width;
+    //let dY = (offsetY - height/2)/height;
+
+    //offset.x += dX * 100 * ((wheelDeltaY>0)?-1:1);
+    //offset.y += dY * 100 * ((wheelDeltaY>0)?-1:1);
+    
+    const z = (wheelDeltaY>0)?(wheelDeltaY/115):(1/Math.abs(wheelDeltaY/115));
+    ChangeZoom(z);
 });
 
 toCoords = point=>{
