@@ -16,7 +16,10 @@ let gridSize;
 
 let hilightPoint = {x:-10,y:-10};
 
-c.font = "bold 20px monospace";
+let p10;
+let unit_v;
+
+c.font = "16px arial";
 
 const functions =[
     {
@@ -106,7 +109,9 @@ g.addEventListener('wheel', (event) => {
     //offset.x += dX * 100 * ((wheelDeltaY>0)?-1:1);
     //offset.y += dY * 100 * ((wheelDeltaY>0)?-1:1);
     
-    const z = (wheelDeltaY>0)?(wheelDeltaY/115):(1/Math.abs(wheelDeltaY/115));
+    const zoomValue = 117;
+
+    const z = (wheelDeltaY>0)?(wheelDeltaY/zoomValue):(1/Math.abs(wheelDeltaY/zoomValue));
     ChangeZoom(z);
 });
 
@@ -124,7 +129,7 @@ yToWorld = y => -y*zoom+height/2+offset.y;
 
 Clear = ()=>{
     c.lineWidth = 2*width;
-    c.strokeStyle = '#eee';
+    c.strokeStyle = '#fff';
 
     c.beginPath();
     c.moveTo(0,0);
@@ -133,7 +138,7 @@ Clear = ()=>{
 };
 
 DrawAxes = ()=>{
-    c.lineWidth = 2;
+    c.lineWidth = 2.5;
     c.strokeStyle = "#000";
 
     if(Math.abs(offset.x) <= width/2)
@@ -162,7 +167,7 @@ ChangeOffset = ((event)=>{
 });
 
 PlotFunction = (color,e)=>{
-    c.lineWidth = 2;
+    c.lineWidth = 3;
     c.strokeStyle = color;
     c.beginPath();
     
@@ -203,8 +208,10 @@ PlotFunctions = () => {
 ComputeGridSize = () =>{
 
     const maxSize = idealGridSize/zoom;
-    const multipliers = [1,2,4,5,1000];
-    const org = 10 ** Math.floor(Math.log10(idealGridSize/zoom));
+    const multipliers = [1,2,5,1000];
+    p10 = Math.floor(Math.log10(idealGridSize/zoom))
+    const org = 10 ** p10;
+
     
     for(let i = 1 ; i < multipliers.length ; ++i)
         if(org*multipliers[i] > maxSize)
@@ -223,34 +230,61 @@ DrawGrid = () =>
     st -= st%gridSize;
     en -= en%gridSize;
 
-    c.strokeStyle= "#666";
-    c.lineWidth = 2;
-
-    for(let x = st ; x <= en ; x += gridSize)
+    
+    for(let x = st-gridSize ; x <= en+gridSize ; x += gridSize)
     {
         const _x = x * zoom + width/2 + offset.x;
         
+        c.strokeStyle= "#888";
+        c.lineWidth = 1.25;
         c.beginPath();
         c.moveTo(_x,0);
         c.lineTo(_x,height);
         c.stroke();
+        
+        c.strokeStyle= "#aaa";
+        c.lineWidth = .5;
+
+        for(let i = 1 ; i < 5 ; ++i)
+        {
+            c.beginPath();
+            c.moveTo(_x+gridSize/5*zoom*i,0);
+            c.lineTo(_x+gridSize/5*zoom*i,height);
+            c.stroke();
+        }
+
     }
-
-
+    
+    
     st = (-offset.y-height/2)/zoom;
     en = (height/2-offset.y)/zoom;
-
+    
     st -= st%gridSize;
     en -= en%gridSize;
-
-    for(let y = st ; y <= en ; y += gridSize)
+    
+    for(let y = st-gridSize ; y <= en+gridSize ; y += gridSize)
     {
         const _y = y * zoom + height/2 + offset.y;
-
+        
+        c.strokeStyle= "#888";
+        c.lineWidth = 1.25;
+        
         c.beginPath();
         c.moveTo(0,_y);
         c.lineTo(width,_y);
         c.stroke();
+        
+        c.strokeStyle= "#aaa";
+        c.lineWidth = .5;
+    
+        for(let i = 1 ; i < 5 ; ++i)
+        {
+            c.beginPath();
+            c.moveTo(0,_y+gridSize/5*zoom*i);
+            c.lineTo(width,_y+gridSize/5*zoom*i);
+            c.stroke();
+        }
+
     }
 }
 
@@ -264,20 +298,22 @@ DrawLabels = () =>
     st -= st%gridSize;
     en -= en%gridSize;
 
-    c.textAlign = "left";
-    c.strokeStyle="#eee";
+    c.textAlign = "center";
+    c.strokeStyle="#fff";
     c.fillStyle="#000";
     c.lineWidth = 4;
 
-    for(let x = st ; x <= en ; x += gridSize)
+    for(let x = st ; x <= en+1 ; x += gridSize)
     {
         const _x = x * zoom + width/2 + offset.x;
 
-        if(x!=0)
+        if(x!=0 && Math.abs(x) >= gridSize*.99)
             if(Math.abs(offset.y) < height/2 )
             {
-                c.strokeText(x,_x+5,offset.y+height/2+20);
-                c.fillText(x,_x+5,offset.y+height/2+20);
+                const val = parseFloat(x.toPrecision(14));
+                
+                c.strokeText(val,_x,offset.y+height/2+20);
+                c.fillText(val,_x,offset.y+height/2+20);
             }
         }
 
@@ -287,24 +323,27 @@ DrawLabels = () =>
     st -= st%gridSize;
     en -= en%gridSize;
 
+    c.textAlign = "left";
 
-    for(let y = st ; y <= en ; y += gridSize)
+    for(let y = st ; y <= en+1 ; y += gridSize)
     {
         const _y = y * zoom + height/2 + offset.y;
 
-        if(y!=0)
+        if(y!=0 && Math.abs(y) >= gridSize*.99 )
             if(Math.abs(offset.x) < width/2)
             {
-                c.strokeText(-y,offset.x+width/2+5,_y-6);
-                c.fillText(-y,offset.x+width/2+5,_y-6);
+                const val = parseFloat(y.toPrecision(14));
+
+                c.strokeText(-val,offset.x+width/2+8,_y+5);
+                c.fillText(-val,offset.x+width/2+8,_y+5);
             }
     }
 }
 
 Draw = (()=>{
     Clear();
-    DrawAxes();
     DrawGrid();
+    DrawAxes();
     PlotFunctions();
     DrawLabels();
 })
