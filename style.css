@@ -1,14 +1,10 @@
-/*canvas {
-  border: 2px black solid;
-}
-*/
-
 body {
   margin: 0;
 }
 
 canvas {
   cursor: pointer;
+  z-index: 0;
 }
 
 .zBtn {
@@ -40,4 +36,71 @@ canvas {
   height: 100vh;
   overflow: hidden;
   background-color: #eee;
+}
+
+#sidebar {
+  background-color: #fff;
+  border-right: 2px grey solid;
+  height: 100vh;
+  width: clamp(300px, 22%, 1000px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  left: 0;
+  z-index: 1;
+  padding-top: 10vh;
+}
+
+.fun {
+  width: 100%;
+  height: 48px;
+  border-bottom: 1px solid grey;
+  border-top: 1px solid grey;
+  background-color: rgb(224, 237, 224);
+  display: flex;
+  flex-direction: row;
+  font-family: Arial;
+  margin-bottom: 8px;
+}
+
+.fun > input {
+  height: 93%;
+  width: 80%;
+  border: none;
+  font-family: Arial;
+  font-size: 24px;
+  padding-left: 16px;
+  position: relative;
+  top: 1%;
+}
+
+.fun > input:focus {
+  background-color: rgb(250, 250, 250);
+}
+
+.fun > p {
+  font-family: Arial;
+  background-color: red;
+  font-size: 24px;
+  position: relative;
+  top: -14px;
+  margin-left: 8px;
+  margin-right: 8px;
+  width: 64px;
+  user-select: none;
+  overflow-x: show;
+}
+
+.fun > button {
+  position: absolute;
+  right: 0;
+  height: 48px;
+  background-color: green;
+  color: white;
+  border: none;
+  font-size: 20px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  cursor: pointer;
+  width: 80px;
 }
